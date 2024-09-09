@@ -1,0 +1,15 @@
+{
+  "name": "fragments",
+  "private":"true",
+  "version": "0.0.1",
+  "description": "Repository for Cloud computing for programmers - DPS955 - Fall 2024",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/sukhmanprit/fragments.git"
+  },
+  "author": "Sukhmanpreet Kaur",
+  "license": "UNLICENSED"
+}
