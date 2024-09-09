@@ -1,6 +1,6 @@
 {
   "name": "fragments",
-  "private":"true",
+  "private": "true",
   "version": "0.0.1",
   "description": "Repository for Cloud computing for programmers - DPS955 - Fall 2024",
   "scripts": {
@@ -11,5 +11,8 @@
     "url": "git+https://github.com/sukhmanprit/fragments.git"
   },
   "author": "Sukhmanpreet Kaur",
-  "license": "UNLICENSED"
+  "license": "UNLICENSED",
+  "devDependencies": {
+    "prettier": "3.3.3"
+  }
 }
