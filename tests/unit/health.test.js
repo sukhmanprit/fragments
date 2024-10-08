@@ -8,6 +8,8 @@ const app = require('../../src/app');
 // Get the version and author from our package.json
 const { version, author } = require('../../package.json');
 
+
+
 describe('/ health check', () => {
   test('should return HTTP 200 response', async () => {
     const res = await request(app).get('/');
@@ -30,4 +32,5 @@ describe('/ health check', () => {
     expect(res.body.githubUrl.startsWith('https://github.com/')).toBe(true);
     expect(res.body.version).toEqual(version);
   });
+
 });
