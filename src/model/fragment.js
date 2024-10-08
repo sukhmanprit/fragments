@@ -18,8 +18,11 @@ const {
 
 class Fragment {
   constructor({ id, ownerId, created, updated, type, size = 0 }) {
-    if (!ownerId || !type) {
-        throw new Error("ownerId and type are required");
+    if (!ownerId) {
+        throw new Error("ownerId is required");
+      }
+      if(!type){
+        throw new Error("type is required");
       }
       if (typeof size !== 'number' || size < 0) {
         throw new Error("size must be non-negative number");
@@ -70,7 +73,7 @@ class Fragment {
   static delete(ownerId, id) {
     return deleteFragment(ownerId, id)
     .then(() => {
-      // Deletion was successful, no additional action required
+      // Deletion successful, no additional action required
     })
     .catch((error) => {
       throw new Error(`Failed to delete fragment with id: ${id}, error: ${error}`);
