@@ -3,6 +3,7 @@
 const request = require('supertest');
 const app = require('../../src/app');
 const { Fragment } = require('../../src/model/fragment');
+const logger = require('../../src/logger');
 
 // Mock the Fragment model's byId method
 jest.mock('../../src/model/fragment');
@@ -48,6 +49,35 @@ describe('GET /v1/fragments/:id', () => {
     expect(res.body.status).toBe('error');
     expect(res.body.error.message).toBe('Failed to retrieve data: Data retrieval failed');
   });
+
+  //test Case for Successful Retrieval with logger.debug and Content-Type Header
+  test('retrieves fragment, sets Content-Type, logs, and returns 200 with correct data', async () => {
+    // Mock the fragment returned by byId, ensuring it has the correct type and is a text fragment
+    Fragment.byId.mockResolvedValue({
+      id: '123',
+      type: 'text/plain',
+      isText: true,
+      getData: jest.fn().mockResolvedValue(Buffer.from('Test fragment data')),
+    });
+  
+    // Spy on logger.debug
+    logger.debug = jest.fn();
+  
+    // Perform the request with authentication
+    const res = await request(app)
+      .get('/v1/fragments/123')
+      .auth('user1@email.com', 'password1');
+  
+    // Assert that the status code is 200 OK
+    expect(res.statusCode).toBe(200);
+  
+    // Assert that the Content-Type header is set correctly
+    expect(res.headers['content-type']).toBe('text/plain; charset=utf-8');
+  
+    // Assert that logger.debug was called with the correct message
+    expect(logger.debug).toHaveBeenCalledWith(expect.stringContaining('Data for fragment ID 123 retrieved successfully'));
+  });
+  
 
   
 });
