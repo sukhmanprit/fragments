@@ -1,7 +1,7 @@
 {
   "name": "fragments",
   "private": "true",
-  "version": "0.0.1",
+  "version": "0.7.0",
   "description": "Repository for Cloud computing for programmers - DPS955 - Fall 2024",
   "scripts": {
     "test:watch": "jest -c jest.config.js --runInBand --watch --",
