@@ -64,4 +64,4 @@ COPY ./tests/.htpasswd ./tests/.htpasswd
 EXPOSE 8080
 
 # Start the container by running our server
-CMD npm start
+CMD ["npm", "start"]
