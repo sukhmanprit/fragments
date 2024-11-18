@@ -12,8 +12,8 @@ module.exports = async (req, res) => {  // Mark the function as async to use awa
 
     logger.debug('Received GET /fragments request with query parameters:', req.query);
 
-    // Call the byUser method with the expand flag. Assuming expand is passed in the query.
-    const expand = req.query.expand === 'true';  // Convert query param to a boolean
+    // Call the byUser method with the expand flag
+    const expand = req.query.expand === '1';  
     const fragments = await Fragment.byUser(req.user, expand);
 
     logger.info(`Successfully retrieved ${fragments.length} fragments for user ${req.user}`);

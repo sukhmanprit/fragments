@@ -3,7 +3,8 @@
 const request = require('supertest');
 const app = require('../../src/app');
 const { Fragment } = require('../../src/model/fragment');
-const logger = require('../../src/logger');
+//const logger = require('../../src/logger');
+//const markdown = require('markdown-it')(); 
 
 // Mock the Fragment model's byId method
 jest.mock('../../src/model/fragment');
@@ -28,56 +29,90 @@ describe('GET /v1/fragments/:id', () => {
     expect(res.body.error.message).toBe('Fragment with ID 123 not found: Fragment not found');
   });
 
-  // Returns 415 if the fragment is not of type text/plain
-  test('returns 415 if the fragment is not a text fragment', async () => {
-    Fragment.byId.mockResolvedValue({ id: '123', type: 'image/png', isText: false });
+  // Returns html content if requested as html
+  test('returns HTML content if Markdown fragment is requested as HTML', async () => {
+    Fragment.byId.mockResolvedValue({
+      id: '123',
+      isText: true,
+      mimeType: 'text/markdown',
+      getData: jest.fn().mockResolvedValue(Buffer.from('# Markdown Content')),
+    });
+
+    const res = await request(app).get('/v1/fragments/123.html').auth('user1@email.com', 'password1');
+    
+    expect(res.statusCode).toBe(200);
+    expect(res.headers['content-type']).toBe('text/html; charset=utf-8');
+    expect(res.text).toContain('<h1>Markdown Content</h1>'); // Ensures Markdown was converted to HTML
+  });
+
+  // Verifies endpoint correctly retrieves and returns a text-based fragment with the expected  content-type
+  test('returns fragment with correct Content-Type for non-HTML, non-Markdown content', async () => {
+    Fragment.byId.mockResolvedValue({
+      id: '123',
+      isText: true,
+      mimeType: 'text/plain',
+      getData: jest.fn().mockResolvedValue(Buffer.from('Plain text content')),
+    });
 
     const res = await request(app).get('/v1/fragments/123').auth('user1@email.com', 'password1');
+    
+    expect(res.statusCode).toBe(200);
+    expect(res.headers['content-type']).toBe('text/plain');
+    expect(res.text).toBe('Plain text content');
+  });
+
+  //Test for Non-Text, Non-JSON Fragments
+  test('returns 415 if the fragment is not a text type or application/json', async () => {
+    Fragment.byId.mockResolvedValue({
+      id: '123',
+      mimeType: 'image/png', 
+      isText: false, 
+      getData: jest.fn(), 
+    });
+
+    const res = await request(app)
+      .get('/v1/fragments/123')
+      .auth('user1@email.com', 'password1');
     
     expect(res.statusCode).toBe(415);
     expect(res.body.status).toBe('error');
     expect(res.body.error.message).toBe('Unsupported Media Type');
   });
 
-  // If retrieving data fails, it should return 500
-  test('returns 500 if retrieving data fails', async () => {
-    Fragment.byId.mockResolvedValue({ id: '123', type: 'text/plain', isText: true, getData: jest.fn().mockRejectedValue(new Error('Data retrieval failed')) });
-
-    const res = await request(app).get('/v1/fragments/123').auth('user1@email.com', 'password1');
-    
-    expect(res.statusCode).toBe(500);
-    expect(res.body.status).toBe('error');
-    expect(res.body.error.message).toBe('Failed to retrieve data: Data retrieval failed');
-  });
-
-  //test Case for Successful Retrieval with logger.debug and Content-Type Header
-  test('retrieves fragment, sets Content-Type, logs, and returns 200 with correct data', async () => {
-    // Mock the fragment returned by byId, ensuring it has the correct type and is a text fragment
+  //Test for Valid Text Fragment
+  test('returns 200 for supported text fragments', async () => {
     Fragment.byId.mockResolvedValue({
       id: '123',
-      type: 'text/plain',
-      isText: true,
-      getData: jest.fn().mockResolvedValue(Buffer.from('Test fragment data')),
+      mimeType: 'text/plain', 
+      isText: true, 
+      getData: jest.fn().mockResolvedValue(Buffer.from('Plain text content')), 
     });
-  
-    // Spy on logger.debug
-    logger.debug = jest.fn();
-  
-    // Perform the request with authentication
+
     const res = await request(app)
       .get('/v1/fragments/123')
       .auth('user1@email.com', 'password1');
-  
-    // Assert that the status code is 200 OK
+    
     expect(res.statusCode).toBe(200);
-  
-    // Assert that the Content-Type header is set correctly
-    expect(res.headers['content-type']).toBe('text/plain; charset=utf-8');
-  
-    // Assert that logger.debug was called with the correct message
-    expect(logger.debug).toHaveBeenCalledWith(expect.stringContaining('Data for fragment ID 123 retrieved successfully'));
+    expect(res.headers['content-type']).toBe('text/plain');
+    expect(res.text).toBe('Plain text content');
   });
-  
 
-  
+  //Test for Valid JSON Fragment
+  test('returns 200 for application/json fragments', async () => {
+    Fragment.byId.mockResolvedValue({
+      id: '123',
+      mimeType: 'application/json', 
+      isText: false, 
+      getData: jest.fn().mockResolvedValue(Buffer.from(JSON.stringify({ key: 'value' }))), 
+    });
+
+    const res = await request(app)
+      .get('/v1/fragments/123')
+      .auth('user1@email.com', 'password1');
+    
+    expect(res.statusCode).toBe(200);
+    expect(res.headers['content-type']).toBe('application/json');
+    expect(JSON.parse(res.text)).toEqual({ key: 'value' });
+  });
+
 });

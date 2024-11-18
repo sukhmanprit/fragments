@@ -13,42 +13,50 @@ function generateUUID() {
 module.exports = async (req, res) => {
   logger.debug('POST /fragments request received');
 
+  // Validate that the content type is either text/* or application/json
+  const contentType = req.headers['content-type'];
+  if (!contentType.startsWith('text/') && contentType !== 'application/json') {
+    logger.warn(`Unsupported content type: ${contentType}`);
+    return res.status(415).json(createErrorResponse(415, 'Unsupported Media Type'));
+  }
+
   // To ensure body is a valid Buffer
   if (!Buffer.isBuffer(req.body)) {
     logger.warn('Request body is not a valid buffer');
     return res.status(415).json(createErrorResponse(415, 'Unsupported Media Type'));
   }
 
-  // Create a new fragment object
-  const newFragment = new Fragment({
-    id: generateUUID(),
-    ownerId: req.user || null,
-    created: new Date().toISOString(),
-    updated: new Date().toISOString(),
-    type: req.headers['content-type'],
-    size: Number(req.headers['content-length']),
-  });
 
-  logger.info(`Created fragment object with ID: ${newFragment.id}`);
+  try{
+    // Create a new fragment object
+    const newFragment = new Fragment({
+      id: generateUUID(),
+      ownerId: req.user || null,
+      created: new Date().toISOString(),
+      updated: new Date().toISOString(),
+      type: req.headers['content-type'],
+      size: Number(req.headers['content-length']),
+    });
 
-  // Save fragment metadata and data
-  try {
+    logger.info(`Created fragment object with ID: ${newFragment.id}`);
+
+    // Save fragment metadata and data
     await newFragment.save(); // Save fragment metadata
     await newFragment.setData(req.body); // Save fragment data
     logger.info(`Fragment with ID: ${newFragment.id} saved successfully`);
-  } catch (error) {
+
+    // Construct location header for newly created fragment
+    const api = process.env.API_URL || `http://${req.headers.host}`;
+    const location = `${api}/v1/fragments/${newFragment.id}`;
+    res.location(location);
+
+    logger.debug(`Location header set to: ${location}`);
+    logger.info(`Response for fragment ID: ${newFragment.id} sent with status 201`);
+
+    // Respond with 201 Created and fragment metadata
+    return res.status(201).json(createSuccessResponse({ fragment: newFragment }));
+  } catch(error){
     logger.error(`Error saving fragment: ${error.message}`);
     return res.status(500).json(createErrorResponse(500, 'Internal Server Error'));
   }
-
-  // Construct location header for newly created fragment
-  const api = process.env.API_URL || `http://${req.headers.host}`;
-  const location = `${api}/v1/fragments/${newFragment.id}`;
-  res.location(location);
-
-  logger.debug(`Location header set to: ${location}`);
-  logger.info(`Response for fragment ID: ${newFragment.id} sent with status 201`);
-
-  // Respond with 201 Created and fragment metadata
-  return res.status(201).json(createSuccessResponse({ fragment: newFragment }));
 };

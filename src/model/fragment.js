@@ -70,15 +70,25 @@ class Fragment {
    * @param {string} id fragment's id
    * @returns Promise<void>
    */
-  static delete(ownerId, id) {
-    return deleteFragment(ownerId, id)
-    .then(() => {
-      // Deletion successful, no additional action required
-    })
-    .catch((error) => {
+  // static delete(ownerId, id) {
+  //   return deleteFragment(ownerId, id)
+  //   .then(() => {
+  //     // Deletion successful, no additional action required
+  //   })
+  //   .catch((error) => {
+  //     throw new Error(`Failed to delete fragment with id: ${id}, error: ${error}`);
+  //   });
+  // }
+  static async delete(ownerId, id) {
+    try {
+      await deleteFragment(ownerId, id);
+      // Deletion successful
+    } catch (error) {
       throw new Error(`Failed to delete fragment with id: ${id}, error: ${error}`);
-    });
+    }
   }
+
+
 
   /**
    * Saves the current fragment to the database
@@ -99,15 +109,25 @@ class Fragment {
    * Gets the fragment's data from the database
    * @returns Promise<Buffer>
    */
-  getData() {
-    return readFragmentData(this.ownerId, this.id)
-    .then((data) => {
-      return data; // Return the buffer data
-    })
-    .catch((error) => {
+  // getData() {
+  //   return readFragmentData(this.ownerId, this.id)
+  //   .then((data) => {
+  //     return data; // Return the buffer data
+  //   })
+  //   .catch((error) => {
+  //     throw new Error(`Failed to get fragment data: ${error}`);
+  //   });
+  // }
+  async getData() {
+    try {
+      const data = await readFragmentData(this.ownerId, this.id);
+      return data;
+    } catch (error) {
       throw new Error(`Failed to get fragment data: ${error}`);
-    });
+    }
   }
+
+
 
   /**
    * Set's the fragment's data in the database
@@ -121,6 +141,7 @@ class Fragment {
       this.size = data.length;
       this.updated = new Date().toISOString();
       await writeFragmentData(this.ownerId, this.id, data);
+      await this.save();
   }
 
   /**
@@ -155,7 +176,7 @@ class Fragment {
    * @returns {boolean} true if we support this Content-Type (i.e., type/subtype)
    */
   static isSupportedType(value) {
-    const supportedTypes = ['text/plain'];
+    const supportedTypes = ['text/plain', 'text/html', 'text/markdown', 'application/json'];
     const { type } = contentType.parse(value);
     return supportedTypes.includes(type);
   }
