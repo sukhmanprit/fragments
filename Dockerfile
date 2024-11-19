@@ -74,7 +74,7 @@ HEALTHCHECK --interval=30s --timeout=5s --start-period=5s --retries=3 \
 USER root
 
 # Install tini for better process management (e.g., signal handling) and remove the unused files
-RUN apk add --no-cache tini=v3.20.3-334-g4d791ea3de5 && \
+RUN apk add --no-cache tini=0.19.0-r2 && \
     rm -rf /var/cache/apk/* /tmp/*
 
 # Switch back to a non-root user for running the application.
