@@ -42,7 +42,7 @@ router.get('/', (req, res) => {
   res.setHeader('Cache-Control', 'no-cache');
   res.status(200).json(
     createSuccessResponse({
-      author: 'Sukhmanpreet Kaur',
+      author,
       githubUrl: 'https://github.com/sukhmanprit/fragments',
       version,
       // Include the hostname in the response
