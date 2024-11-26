@@ -47,7 +47,7 @@ RUN npm install --no-optional && npm cache clean --force
 FROM node:20.18.0-alpine3.19@sha256:96a83b49de736e7563315eebacc711cc9b35ac50715363d089da7b0d1e093111 AS production
 
 # Add non-root user for better security.
-USER node
+#USER node
 
 # Set the same working directory as before so Docker knows where to find files
 WORKDIR /app
@@ -71,14 +71,14 @@ HEALTHCHECK --interval=30s --timeout=5s --start-period=15s --retries=3 \
     CMD curl -f http://localhost:8080 || exit 1
 
 # Switch to root to install system-level packages.
-USER root
+#USER root
 
 # Install tini for better process management (e.g., signal handling) and remove the unused files
 RUN apk add --no-cache tini=0.19.0-r2 && \
     rm -rf /var/cache/apk/* /tmp/*
 
 # Switch back to a non-root user for running the application.
-USER node
+#USER node
 
 # Use tini as the init system to handle PID 1.
 ENTRYPOINT ["/sbin/tini", "--"]
