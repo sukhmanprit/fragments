@@ -67,7 +67,7 @@ COPY ./tests/.htpasswd ./tests/.htpasswd
 EXPOSE 8080
 
 # Add a health check for better container orchestration
-HEALTHCHECK --interval=30s --timeout=5s --start-period=5s --retries=3 \
+HEALTHCHECK --interval=30s --timeout=5s --start-period=15s --retries=3 \
     CMD curl -f http://localhost:8080 || exit 1
 
 # Switch to root to install system-level packages.
