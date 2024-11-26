@@ -83,6 +83,10 @@ jobs:
           ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
           ECR_REPO: fragments
           VERSION_TAG: ${{ github.ref_name }}
+          API_URL: ${{ secrets.API_URL }}
+          AWS_COGNITO_POOL_ID: ${{ secrets.AWS_COGNITO_POOL_ID }}
+          WS_S3_ENDPOINT_URL: ${{ secrets.AWS_S3_ENDPOINT_URL }}
+          AWS_COGNITO_CLIENT_ID: ${{ secrets.AWS_COGNITO_CLIENT_ID }}
         with:
           task-definition: fragments-definition.json
           container-name: fragments
@@ -91,17 +95,15 @@ jobs:
           # Add all the necessary environment variables, using GitHub Encrypted Secrets
           # for any values that should not be checked into git directly.  Here are
           # a few to get you started, but you should fill in the rest yourself.
-          with:
-            # Use our GitHub Encrypted Secrets via secrets.*
-            aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-            aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-            aws-session-token: ${{ secrets.AWS_SESSION_TOKEN }}
-            # Hard-code our region, which isn't a secret, and won't change
-            aws-region: us-east-1
           environment-variables: |
             LOG_LEVEL=debug
             NODE_ENV=production
-            API_URL=http://fragments-lb-514843074.us-east-1.elb.amazonaws.com/
+            API_URL=${{ env.API_URL }}
+            AWS_REGION=us-east-1
+            AWS_COGNITO_POOL_ID=${{ env.AWS_COGNITO_POOL_ID }}
+            AWS_COGNITO_CLIENT_ID=${{ env.AWS_COGNITO_CLIENT_ID }}
+             AWS_S3_ENDPOINT_URL=${{ env.AWS_S3_ENDPOINT_URL }}
+
             
       - name: Deploy Amazon ECS task definition
         uses: aws-actions/amazon-ecs-deploy-task-definition@v1
