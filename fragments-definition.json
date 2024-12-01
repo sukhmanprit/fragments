@@ -1,5 +1,5 @@
 {
-    "taskDefinitionArn": "arn:aws:ecs:us-east-1:890471259348:task-definition/fragments-task:1",
+    "taskDefinitionArn": "arn:aws:ecs:us-east-1:890471259348:task-definition/fragments-task:2",
     "containerDefinitions": [
         {
             "name": "fragments-container",
@@ -50,10 +50,8 @@
                     "value": "REPLACE_WITH_SECRET"
                 }
             ],
-            "environmentFiles": [],
             "mountPoints": [],
             "volumesFrom": [],
-            "ulimits": [],
             "logConfiguration": {
                 "logDriver": "awslogs",
                 "options": {
@@ -63,8 +61,7 @@
                     "max-buffer-size": "25m",
                     "awslogs-region": "us-east-1",
                     "awslogs-stream-prefix": "ecs"
-                },
-                "secretOptions": []
+                }
             },
             "systemControls": []
         }
@@ -73,7 +70,7 @@
     "taskRoleArn": "arn:aws:iam::890471259348:role/LabRole",
     "executionRoleArn": "arn:aws:iam::890471259348:role/LabRole",
     "networkMode": "awsvpc",
-    "revision": 1,
+    "revision": 2,
     "volumes": [],
     "status": "ACTIVE",
     "requiresAttributes": [
@@ -116,7 +113,7 @@
         "cpuArchitecture": "X86_64",
         "operatingSystemFamily": "LINUX"
     },
-    "registeredAt": "2024-11-26T03:26:27.515Z",
+    "registeredAt": "2024-12-01T16:18:25.527Z",
     "registeredBy": "arn:aws:sts::890471259348:assumed-role/voclabs/user2481000=skaur255@myseneca.ca",
     "tags": []
 }
