@@ -96,7 +96,7 @@ jobs:
           # for any values that should not be checked into git directly.  Here are
           # a few to get you started, but you should fill in the rest yourself.
           environment-variables: |
-            LOG_LEVEL=debug
+            LOG_LEVEL=info
             NODE_ENV=production
             API_URL=${{ env.API_URL }}
             AWS_REGION=us-east-1
