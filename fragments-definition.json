@@ -1,9 +1,9 @@
 {
-    "taskDefinitionArn": "arn:aws:ecs:us-east-1:890471259348:task-definition/fragments-task:2",
+    "taskDefinitionArn": "arn:aws:ecs:us-east-1:890471259348:task-definition/fragments-task:5",
     "containerDefinitions": [
         {
             "name": "fragments-container",
-            "image": "sukhmanprit/fragments:latest",
+            "image": "890471259348.dkr.ecr.us-east-1.amazonaws.com/fragments:latest",
             "cpu": 256,
             "memory": 512,
             "portMappings": [
@@ -23,15 +23,11 @@
                 },
                 {
                     "name": "API_URL",
-                    "value": "http://fragments-lb-514843074.us-east-1.elb.amazonaws.com/"
+                    "value": "REPLACE_WITH_SECRET"
                 },
                 {
                     "name": "PORT",
                     "value": "80"
-                },
-                {
-                    "name": "HTPASSWD_FILE",
-                    "value": "tests/.htpasswd"
                 },
                 {
                     "name": "AWS_S3_ENDPOINT_URL",
@@ -50,8 +46,10 @@
                     "value": "REPLACE_WITH_SECRET"
                 }
             ],
+            "environmentFiles": [],
             "mountPoints": [],
             "volumesFrom": [],
+            "ulimits": [],
             "logConfiguration": {
                 "logDriver": "awslogs",
                 "options": {
@@ -61,7 +59,8 @@
                     "max-buffer-size": "25m",
                     "awslogs-region": "us-east-1",
                     "awslogs-stream-prefix": "ecs"
-                }
+                },
+                "secretOptions": []
             },
             "systemControls": []
         }
@@ -70,7 +69,7 @@
     "taskRoleArn": "arn:aws:iam::890471259348:role/LabRole",
     "executionRoleArn": "arn:aws:iam::890471259348:role/LabRole",
     "networkMode": "awsvpc",
-    "revision": 2,
+    "revision": 5,
     "volumes": [],
     "status": "ACTIVE",
     "requiresAttributes": [
@@ -81,6 +80,9 @@
             "name": "ecs.capability.execution-role-awslogs"
         },
         {
+            "name": "com.amazonaws.ecs.capability.ecr-auth"
+        },
+        {
             "name": "com.amazonaws.ecs.capability.docker-remote-api.1.19"
         },
         {
@@ -88,6 +90,9 @@
         },
         {
             "name": "com.amazonaws.ecs.capability.task-iam-role"
+        },
+        {
+            "name": "ecs.capability.execution-role-ecr-pull"
         },
         {
             "name": "com.amazonaws.ecs.capability.docker-remote-api.1.18"
@@ -113,7 +118,7 @@
         "cpuArchitecture": "X86_64",
         "operatingSystemFamily": "LINUX"
     },
-    "registeredAt": "2024-12-01T16:18:25.527Z",
+    "registeredAt": "2024-12-02T20:56:13.119Z",
     "registeredBy": "arn:aws:sts::890471259348:assumed-role/voclabs/user2481000=skaur255@myseneca.ca",
     "tags": []
 }
