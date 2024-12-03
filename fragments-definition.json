@@ -22,6 +22,10 @@
                     "value": "skaur255-fragments"
                 },
                 {
+                    "name": "AWS_DYNAMODB_TABLE_NAME",
+                    "value": "fragments"
+                },
+                {
                     "name": "AWS_COGNITO_POOL_ID",
                     "value": "REPLACE_WITH_SECRET"
                 },
