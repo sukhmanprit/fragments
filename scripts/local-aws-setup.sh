@@ -44,6 +44,6 @@ dynamodb create-table \
     --provisioned-throughput \
         ReadCapacityUnits=10,WriteCapacityUnits=5
 
-# Wait until the Fragments table exists in dynamodb-local, so we can use it, see:
+# Wait until the Fragments table exists in dynamodb-local, so we can use it, see::
 # https://awscli.amazonaws.com/v2/documentation/api/latest/reference/dynamodb/wait/table-exists.html
 aws --endpoint-url=http://localhost:8000 dynamodb wait table-exists --table-name fragments
