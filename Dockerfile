@@ -23,6 +23,19 @@ ENV PORT=8080 \
     NPM_CONFIG_LOGLEVEL=warn \
     NPM_CONFIG_COLOR=false
 
+# Install required dependencies for sharp on Alpine
+RUN apk add --no-cache \
+    python3 \
+    make \
+    g++ \
+    libtool \
+    autoconf \
+    automake \
+    libpng-dev \
+    libjpeg-turbo-dev \
+    zlib-dev \
+    vips-dev
+
 # Use /app as our working directory
 WORKDIR /app
 
@@ -34,7 +47,8 @@ COPY package*.json /app/
 # Install node dependencies defined in package-lock.json
 #Combining npm install and npm cache clean in a single RUN command makes caching more efficient,
 # so Docker will only re-run this step if the package.json files change.
-RUN npm install --no-optional && npm cache clean --force
+#RUN npm install --no-optional && npm cache clean --force
+RUN npm install --platform=linuxmusl --include=optional sharp && npm cache clean --force
 
 
 # -----------------------------------------
