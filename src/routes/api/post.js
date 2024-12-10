@@ -13,19 +13,18 @@ function generateUUID() {
 module.exports = async (req, res) => {
   logger.debug('POST /fragments request received');
 
-  // Validate that the content type is either text/* or application/json
+  // Validate that the content type is supported content type
   const contentType = req.headers['content-type'];
-  if (!contentType.startsWith('text/') && contentType !== 'application/json') {
+  if (!Fragment.isSupportedType(contentType)){
     logger.warn(`Unsupported content type: ${contentType}`);
     return res.status(415).json(createErrorResponse(415, 'Unsupported Media Type'));
   }
 
   // To ensure body is a valid Buffer
   if (!Buffer.isBuffer(req.body)) {
-    logger.warn('Request body is not a valid buffer');
-    return res.status(415).json(createErrorResponse(415, 'Unsupported Media Type'));
+    logger.warn('Request body must be a binary buffer');
+    return res.status(400).json(createErrorResponse(400, 'Request body must be a binary buffer'));
   }
-
 
   try{
     // Create a new fragment object

@@ -70,15 +70,6 @@ class Fragment {
    * @param {string} id fragment's id
    * @returns Promise<void>
    */
-  // static delete(ownerId, id) {
-  //   return deleteFragment(ownerId, id)
-  //   .then(() => {
-  //     // Deletion successful, no additional action required
-  //   })
-  //   .catch((error) => {
-  //     throw new Error(`Failed to delete fragment with id: ${id}, error: ${error}`);
-  //   });
-  // }
   static async delete(ownerId, id) {
     try {
       await deleteFragment(ownerId, id);
@@ -109,15 +100,6 @@ class Fragment {
    * Gets the fragment's data from the database
    * @returns Promise<Buffer>
    */
-  // getData() {
-  //   return readFragmentData(this.ownerId, this.id)
-  //   .then((data) => {
-  //     return data; // Return the buffer data
-  //   })
-  //   .catch((error) => {
-  //     throw new Error(`Failed to get fragment data: ${error}`);
-  //   });
-  // }
   async getData() {
     try {
       const data = await readFragmentData(this.ownerId, this.id);
@@ -126,7 +108,6 @@ class Fragment {
       throw new Error(`Failed to get fragment data: ${error}`);
     }
   }
-
 
 
   /**
@@ -143,6 +124,7 @@ class Fragment {
       await writeFragmentData(this.ownerId, this.id, data);
       await this.save();
   }
+  
 
   /**
    * Returns the mime type (e.g., without encoding) for the fragment's type:
@@ -176,7 +158,7 @@ class Fragment {
    * @returns {boolean} true if we support this Content-Type (i.e., type/subtype)
    */
   static isSupportedType(value) {
-    const supportedTypes = ['text/plain', 'text/html', 'text/markdown', 'application/json'];
+    const supportedTypes = ['text/plain','text/html','text/markdown','text/csv', 'application/json', 'application/yaml', 'image/png','image/jpeg', 'image/webp', 'image/avif', 'image/gif'];
     const { type } = contentType.parse(value);
     return supportedTypes.includes(type);
   }

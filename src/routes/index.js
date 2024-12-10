@@ -21,23 +21,6 @@ const router = express.Router();
  */
 router.use(`/v1`, authenticate(),require('./api'));
 
-/**
- * Define a simple health check route. If the server is running
- * we'll respond with a 200 OK.  If not, the server isn't healthy.
- */
-// router.get('/', (req, res) => {
-//   // Client's shouldn't cache this response (always request it fresh)
-//   res.setHeader('Cache-Control', 'no-cache');
-//   // Using createSuccessResponse instead of res.status(200).json()
-//   const response = createSuccessResponse({
-//     author,
-//     // Use your own GitHub URL for this!
-//     githubUrl: 'https://github.com/sukhmanprit/fragments',
-//     version,
-//   });
-//   res.status(200).json(response);
-// });
-
 router.get('/', (req, res) => {
   res.setHeader('Cache-Control', 'no-cache');
   res.status(200).json(

@@ -79,7 +79,7 @@ describe('POST /v1/fragments', () => {
     expect(res.header['location']).toContain(`/v1/fragments/${res.body.fragment.id}`);
   });
 
-// Authenticated users can create a JSON fragment
+  // Authenticated users can create a JSON fragment
   test('authenticated users can create an application/json fragment', async () => {
     const res = await request(app)
       .post('/v1/fragments')
@@ -98,27 +98,27 @@ describe('POST /v1/fragments', () => {
   });
 
 
-    // Test to verify all expected properties in the response
-    test('response includes all necessary and expected properties (id, created, type, size, ownerId)', async () => {
-        const res = await request(app)
-          .post('/v1/fragments')
-          .auth('user1@email.com', 'password1')
-          .set('Content-Type', 'text/plain')
-          .send('Fragment content to verify properties');
+  // Test to verify all expected properties in the response
+  test('response includes all necessary and expected properties (id, created, type, size, ownerId)', async () => {
+      const res = await request(app)
+        .post('/v1/fragments')
+        .auth('user1@email.com', 'password1')
+        .set('Content-Type', 'text/plain')
+        .send('Fragment content to verify properties');
     
-        expect(res.statusCode).toBe(201);
-         // Check that response contains the necessary fragment properties
-        const fragment = res.body.fragment;
-        expect(fragment.id).toBeDefined();
-        expect(fragment.ownerId).toBeDefined();
-        expect(fragment.type).toBe('text/plain');
-        expect(fragment.size).toBe(37);
-        expect(fragment.created).toBeDefined();
-        expect(fragment.updated).toBeDefined();
-    });
+      expect(res.statusCode).toBe(201);
+       // Check that response contains the necessary fragment properties
+      const fragment = res.body.fragment;
+      expect(fragment.id).toBeDefined();
+      expect(fragment.ownerId).toBeDefined();
+      expect(fragment.type).toBe('text/plain');
+      expect(fragment.size).toBe(37);
+      expect(fragment.created).toBeDefined();
+      expect(fragment.updated).toBeDefined();
+  });
 
-   // POST response includes a Location header with a full URL to GET the created fragment
-   test('response includes a Location header with a full URL to GET the created fragment', async () => {
+  // POST response includes a Location header with a full URL to GET the created fragment
+  test('response includes a Location header with a full URL to GET the created fragment', async () => {
     const res = await request(app)
       .post('/v1/fragments')
       .auth('user1@email.com', 'password1')
@@ -149,54 +149,32 @@ describe('POST /v1/fragments', () => {
     expect(res.body.error.message).toBe('Unsupported Media Type');
     // Update expected log message to match actual log output
   expect(logSpy).toHaveBeenCalledWith('Unsupported content type: application/xml');
-    //expect(logSpy).toHaveBeenCalledWith('Request body is not a valid buffer');
   });
-
-  // test('request body is not a valid buffer', async () => {
-  //   const logSpy = jest.spyOn(logger, 'warn');
   
-  //   // Send a string without converting it to a buffer
-  //   const res = await request(app)
-  //     .post('/v1/fragments')
-  //     .auth('user1@email.com', 'password1')
-  //     .set('Content-Type', 'text/plain')
-  //     .send('This is a string, not a buffer'); // `req.body` should fail the buffer check
-  
-  //   expect(res.statusCode).toBe(415);
-  //   expect(res.body.status).toBe('error');
-  //   expect(res.body.error.code).toBe(415);
-  //   expect(res.body.error.message).toBe('Unsupported Media Type');
-  
-  //   expect(logSpy).toHaveBeenCalledWith('Request body is not a valid buffer');
-  // });
   
 
-// Error saving fragment
-test('error during fragment saving is handled correctly', async () => {
-  // Mock the `Fragment` model to throw an error
-  jest.spyOn(require('../../src/model/fragment').Fragment.prototype, 'save').mockImplementationOnce(() => {
-    throw new Error('Database save failed');
+  // Error saving fragment
+  test('error during fragment saving is handled correctly', async () => {
+    // Mock the `Fragment` model to throw an error
+    jest.spyOn(require('../../src/model/fragment').Fragment.prototype, 'save').mockImplementationOnce(() => {
+      throw new Error('Database save failed');
+    });
+
+    const logSpy = jest.spyOn(logger, 'error');
+
+    const res = await request(app)
+      .post('/v1/fragments')
+      .auth('user1@email.com', 'password1')
+      .set('Content-Type', 'text/plain')
+      .send('This will cause an error');
+
+    expect(res.statusCode).toBe(500);
+    expect(res.body.status).toBe('error');
+    expect(res.body.error.code).toBe(500);
+    expect(res.body.error.message).toBe('Internal Server Error');
+
+    // Check that the log error was called with the correct message
+    expect(logSpy).toHaveBeenCalledWith(expect.stringContaining('Error saving fragment: Database save failed'));
   });
-
-  const logSpy = jest.spyOn(logger, 'error');
-
-  const res = await request(app)
-    .post('/v1/fragments')
-    .auth('user1@email.com', 'password1')
-    .set('Content-Type', 'text/plain')
-    .send('This will cause an error');
-
-  expect(res.statusCode).toBe(500);
-  expect(res.body.status).toBe('error');
-  expect(res.body.error.code).toBe(500);
-  expect(res.body.error.message).toBe('Internal Server Error');
-
-  // Check that the log error was called with the correct message
-  expect(logSpy).toHaveBeenCalledWith(expect.stringContaining('Error saving fragment: Database save failed'));
-});
-
-
-
-
 
 });
